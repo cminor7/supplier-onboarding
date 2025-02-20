@@ -66,13 +66,13 @@ namespace ONBOARDING
 			SnowflakeCommand($@"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK 
 					SET 
 						INITIATED = CASE
-							WHEN TASKID IN('1A') AND SUPPLIER_NO = '{supNo}' THEN CURRENT_DATE
-							WHEN TASKID NOT IN ('1A') AND SUPPLIER_NO = '{supNo}' THEN NULL
+							WHEN TASKID IN = '1A' AND SUPPLIER_NO = '{supNo}' THEN CURRENT_DATE
+							WHEN TASKID <> '1A' AND SUPPLIER_NO = '{supNo}' THEN NULL
 							ELSE INITIATED
 							END,
 						COMPLETED = CASE
 							WHEN TASKID = '1A' AND SUPPLIER_NO = '{supNo}' THEN CURRENT_DATE
-							WHEN TASKID<> '1A' AND SUPPLIER_NO = '{supNo}' THEN NULL
+							WHEN TASKID <> '1A' AND SUPPLIER_NO = '{supNo}' THEN NULL
 							ELSE COMPLETED
 							END,
 						BYPASSED = FALSE
@@ -93,23 +93,6 @@ namespace ONBOARDING
 			Parallel.Invoke(() => SnowflakeCommand($"DELETE FROM ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK WHERE SUPPLIER_NO ='{supNo}'"),
 				() => SnowflakeCommand($"DELETE FROM ISP.SPM.SUPPLIER_ONBOARDING_SUPPLIER WHERE SUPPLIER_NO ='{supNo}'")
 			);
-		}
-
-		public static string CheckContacts(string supNo)
-		{
-			return $@"SELECT 
-						CASE 
-							WHEN COUNT(CASE WHEN [role] = 'Operations' THEN 1 END) > 0 AND COUNT(CASE WHEN [role] = 'Primary' THEN 1 END) > 0 
-							THEN 1 
-							ELSE 0 
-							END AS has_both_roles
-					FROM Itemmanagement.dbo.tblResponsibilities
-					WHERE supplier = '{supNo}'";
-		}
-
-		public static string CheckTBLSupplier(string supNo)
-		{
-			return $"SELECT COUNT(*) FROM Itemmanagement.dbo.tblSupplier WHERE [Supplier No] = '{supNo}'";
 		}
 
 
@@ -211,17 +194,6 @@ namespace ONBOARDING
 				() => SnowflakeCommand(@"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_GGS_SUPPLIER_NUMBER SET DATE_USED = NULL WHERE DATE_USED IS NOT NULL AND SUPPLIER_NO NOT IN 
 				(SELECT SUPPLIER_NO FROM ISP.SPM.SUPPLIER_ONBOARDING_SUPPLIER UNION SELECT SUPPLIER_INT FROM PUBLISH.GSCCE.SUPPLIER_EDV WHERE SUPPLIER_CHAR LIKE '00208%')")
 			);
-		}
-
-		// EMAIL MAINTENANCE QUERIES
-		public static DataView EmailTasks()
-		{
-			return SnowflakeView(@$"SELECT DISTINCT PROFILE,TASKID FROM ISP.SPM.SUPPLIER_ONBOARDING_EMAIL ORDER BY TASKID");
-		}
-
-		public static DataView EmailTaskIDs()
-		{
-			return SnowflakeView(@$"SELECT DISTINCT PROFILE,TASKID, EMAIL_ID FROM ISP.SPM.SUPPLIER_ONBOARDING_EMAIL ORDER BY TASKID");
 		}
 	}
 }

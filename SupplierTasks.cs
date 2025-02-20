@@ -54,7 +54,7 @@ namespace ONBOARDING
 				dgv_tasks.Columns.Add(bttn);
 			}
 
-			foreach (DataGridViewColumn column in dgv_tasks.Columns) { column.ReadOnly = true; column.FillWeight = 80; }  
+			foreach (DataGridViewColumn column in dgv_tasks.Columns) { column.ReadOnly = true; column.FillWeight = 80; }  // setting the width weight for each column
 			dgv_tasks.Columns["TASKID"].FillWeight = 54;
 			dgv_tasks.Columns["AUTO_COMPLETED"].FillWeight = 98;
 			dgv_tasks.Columns["BACKEND_CHECK"].FillWeight = 95;
@@ -67,9 +67,9 @@ namespace ONBOARDING
 			strip_message.Text = $"DISPLAYING TASKS FOR SUPPLIER <{row["SUPPLIER_NO"]}>  ( ･ω･)ﾉ";
 		}
 
-		private void dgv_tasks_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-		{
-			if (e.ColumnIndex == dgv_tasks.Columns["TASK_BUTTON"].Index && e.RowIndex >= 0) // handles comestics of the button on data grid view
+		private void dgv_tasks_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) // handles comestics of the button on data grid view
+        {
+			if (e.ColumnIndex == dgv_tasks.Columns["TASK_BUTTON"].Index && e.RowIndex >= 0)
 			{
 				string taskID = dgv_tasks.Rows[e.RowIndex].Cells["TASKID"].Value.ToString();
 				string completeValue = dgv_tasks.Rows[e.RowIndex].Cells["COMPLETED"].Value.ToString();
@@ -83,7 +83,7 @@ namespace ONBOARDING
 			dgv_tasks.Columns["TASK_BUTTON"].DisplayIndex = dgv_tasks.Columns.Count - 1; // moves the button to last column after refresh
 		}
 
-		private void dgv_tasks_CellClick(object sender, DataGridViewCellEventArgs e)
+		private void dgv_tasks_CellClick(object sender, DataGridViewCellEventArgs e) // handles cell click events
 		{
 			string currentTime = DateTime.Now.ToString("HH:mm:ss");
 			string taskID = dgv_tasks.Rows[e.RowIndex].Cells["taskID"].Value.ToString();
@@ -150,7 +150,7 @@ namespace ONBOARDING
 			if (e.ColumnIndex == dgv_tasks.Columns["COMMENTS"].Index && e.RowIndex >= 0) // handles comment column edit
 			{
 				string taskID = dgv_tasks.Rows[e.RowIndex].Cells["TASKID"].Value.ToString();
-				string comments = dgv_tasks.Rows[e.RowIndex].Cells["COMMENTS"].Value.ToString().Replace("'", "''");
+				string comments = dgv_tasks.Rows[e.RowIndex].Cells["COMMENTS"].Value.ToString().Replace("'", "''"); // need to replace single quote with '' because of snowflake query escape character format
 				string supNo = dgv_tasks.Rows[e.RowIndex].Cells["SUPPLIER_NO"].Value.ToString();
 				SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK SET COMMENTS = LEFT('{comments}', 250) WHERE SUPPLIER_NO = '{supNo}' AND TASKID = '{taskID}'");
 			}
@@ -161,8 +161,8 @@ namespace ONBOARDING
 			DataView profileDependency = SnowflakeView($"SELECT * FROM ISP.SPM.SUPPLIER_ONBOARDING_TASK_DEPENDENCIES WHERE PROFILE = '{profile}' AND TASKID = '{taskID}'");
 			if (profileDependency.Count == 0) return;
 			DataRowView taskRow = profileDependency[0];
-			string taskToIntitiate = taskRow["INITIATE"].ToString();
-			string dependentTasks = taskRow["CHECK_IF_COMPLETE"].ToString();
+			string taskToIntitiate = taskRow["INITIATE"].ToString(); // task list looks like this -> 2B, 2C
+			string dependentTasks = taskRow["CHECK_IF_COMPLETE"].ToString(); // task list looks like this -> 1A, 1B, 1C
 
 			if (!string.IsNullOrEmpty(dependentTasks))
 			{
@@ -177,7 +177,7 @@ namespace ONBOARDING
 			foreach (string task in initiateTasks)
 			{
 				autoCompleteTasks.RowFilter = $"TASKID = '{task}'";
-				if (autoCompleteTasks.Count > 0) // check for autocomplete email tasks done by program and complete them
+				if (autoCompleteTasks.Count > 0) // check for autocomplete tasks and complete them
 				{
 					Parallel.Invoke(() => Query.CompleteTasks(supNo, task), () => SendTaskCompleteEmails(task, supNo, profile));
 					InitiateNextTask(task, supNo, profile);
@@ -191,7 +191,7 @@ namespace ONBOARDING
 			int firstDisplayedRow = dgv_tasks.FirstDisplayedScrollingRowIndex;
 			taskTrack = Query.TaskTrack(supNo);
 			dgv_tasks.DataSource = taskTrack;
-			if (firstDisplayedRow >= 0 && firstDisplayedRow < dgv_tasks.RowCount) dgv_tasks.FirstDisplayedScrollingRowIndex = firstDisplayedRow;
+			if (firstDisplayedRow >= 0 && firstDisplayedRow < dgv_tasks.RowCount) dgv_tasks.FirstDisplayedScrollingRowIndex = firstDisplayedRow; // ensures we keep the viewer's current row position after refresh
 			strip_time.Text = currentTime;
 			strip_message.Text = statusMessage;
 		}

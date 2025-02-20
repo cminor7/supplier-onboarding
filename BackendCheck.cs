@@ -42,13 +42,13 @@ namespace ONBOARDING
 				"3Y" => Task_3Y(supNo, profile),
 				"3B" => Task_3B(supNo, profile),
 				"3F" => Task_3F(supNo, profile),
-				_ => false,
+				_ => false
 			};
 		}
 
 		private static bool Task_2A(string supNo, string profile)
 		{
-			object result = ExecuteScalarQuery(Query.CheckTBLSupplier(supNo));
+			object result = ExecuteScalarQuery($"SELECT COUNT(*) FROM Itemmanagement.dbo.tblSupplier WHERE [Supplier No] = '{supNo}'");
 			bool hasValue = result != null && Convert.ToInt32(result) >= 1;
 			if (hasValue) { CompleteAutoTask("2A", supNo, profile); return true; } 
 			else return false;
@@ -56,7 +56,14 @@ namespace ONBOARDING
 
 		private static bool Task_2B(string supNo, string profile)
 		{
-			object result = ExecuteScalarQuery(Query.CheckContacts(supNo));
+			object result = ExecuteScalarQuery($@"SELECT 
+						CASE 
+							WHEN COUNT(CASE WHEN [role] = 'Operations' THEN 1 END) > 0 AND COUNT(CASE WHEN [role] = 'Primary' THEN 1 END) > 0 
+							THEN 1 
+							ELSE 0 
+							END AS has_both_roles
+					FROM Itemmanagement.dbo.tblResponsibilities
+					WHERE supplier = '{supNo}'");
 			bool hasBothValues = result != null && Convert.ToInt32(result) == 1;
 			if (hasBothValues){ CompleteAutoTask("2B", supNo, profile); return true; } 
 			else return false;
