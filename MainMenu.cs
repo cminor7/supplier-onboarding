@@ -66,7 +66,7 @@ namespace ONBOARDING
             Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
         }
 
-        private void MainMenu_Load(object sender, EventArgs e)
+        private void MainMenu_Load(object sender, EventArgs e) // check for update - check for VPN and sharedrive access
         {
             string version;
             try
