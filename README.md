@@ -1,10 +1,6 @@
-## TECHNICAL MANUAL
-
 ## REQUIREMENTS
 
-
-
-#### LIBRARIES
+#### NUGET PACKAGES
 ```
 Snowflake.Data
 System.Data.SqlClient
