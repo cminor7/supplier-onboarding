@@ -54,7 +54,7 @@ namespace ONBOARDING
 				return;
 			}
 
-			if(!int.TryParse(txtbox_contact_phone.Text.Replace(" ",""),out _))
+            if (!(Regex.Replace(txtbox_contact_phone.Text, @"[\s-]", "").All(char.IsDigit)))
 			{
                 MessageBox.Show("ONLY NUMBERS ALLOWED FOR PHONE NUMBER  ヾ( ･`⌓´･)ﾉﾞ", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
