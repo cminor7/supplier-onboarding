@@ -55,7 +55,7 @@ namespace ONBOARDING
 
 			HttpResponseMessage response = await PostXmlRequest(url, soapString);
 			string content = await response.Content.ReadAsStringAsync();
-			// MessageBox.Show(content);
+			//MessageBox.Show(content);
 			return content;
 		}
 
