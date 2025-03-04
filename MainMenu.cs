@@ -1,6 +1,10 @@
 using System;
 using System.Diagnostics;
 using static ONBOARDING.DBConnection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using static ONBOARDING.Email;
+using System.Data;
+using Windows.ApplicationModel.Email;
 
 namespace ONBOARDING
 {
@@ -66,7 +70,7 @@ namespace ONBOARDING
             Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
         }
 
-        private void MainMenu_Load(object sender, EventArgs e) // check for update - check for VPN and sharedrive access
+        private void MainMenu_Load(object sender, EventArgs e) // check for update, VPN and sharedrive access
         {
             string version;
             try
@@ -81,9 +85,9 @@ namespace ONBOARDING
             }
 
             if (version == txtbox_version.Text) return;
-            DialogResult result = MessageBox.Show("NEW VERSION AVAILABLE, UPDATE?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.No) return;
+            DialogResult result = MessageBox.Show("NEW VERSION AVAILABLE, PLEASE UPDATE", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Process.Start("explorer.exe", @"\\us.grainger.com\files\Office\LF\DB\PM\MerchandisingDBs\New Supplier Onboarding\supplier_onboarding\LATEST_VERSION");
+            this.Close();
         }
 
         private void bttn_email_info_Click(object sender, EventArgs e)
