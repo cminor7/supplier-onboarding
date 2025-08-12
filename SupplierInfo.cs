@@ -104,7 +104,7 @@ namespace ONBOARDING
             }
             foreach (Control ctrl in panel_supplier_info.Controls)
 			{
-				if (ctrl.Name == "panel_supplier_info" || ctrl.Name == "txtbox_comments" || ctrl is Label || ctrl is StatusStrip || ctrl.Name == "combox_pm_code") continue;
+				if (ctrl.Name == "panel_supplier_info" || ctrl.Name == "txtbox_comments" || ctrl is Label || ctrl is StatusStrip || ctrl.Name == "txtbox_supplier_no_swap") continue;
 				if (string.IsNullOrWhiteSpace(ctrl.Text))
 				{
 					if (ctrl.Name == "combox_supplier_state" && combox_supplier_country.Text != "USA (US)" && combox_supplier_country.Text != "CANADA (CA)") continue;

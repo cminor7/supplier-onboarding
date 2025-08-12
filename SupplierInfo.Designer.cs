@@ -72,11 +72,13 @@
             strip_time = new ToolStripStatusLabel();
             strip_message = new ToolStripStatusLabel();
             panel_supplier_info = new Panel();
+            txtbox_supplier_no_swap = new TextBox();
+            lbl_swap = new Label();
+            txtbox_contact_phone = new TextBox();
             txtbox_spa_email = new TextBox();
             label_spa_email = new Label();
             txtbox_comments = new TextBox();
             lbl_comments = new Label();
-            txtbox_contact_phone = new TextBox();
             panel_supplier_name.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)img_search_icon).BeginInit();
             menu_supplier_info.SuspendLayout();
@@ -608,7 +610,7 @@
             strip_supplier_info.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             strip_supplier_info.ImageScalingSize = new Size(20, 20);
             strip_supplier_info.Items.AddRange(new ToolStripItem[] { toolStripSplitButton1, strip_time, strip_message });
-            strip_supplier_info.Location = new Point(0, 670);
+            strip_supplier_info.Location = new Point(0, 739);
             strip_supplier_info.Name = "strip_supplier_info";
             strip_supplier_info.Padding = new Padding(1, 0, 12, 0);
             strip_supplier_info.Size = new Size(1469, 31);
@@ -647,6 +649,8 @@
             // 
             panel_supplier_info.AutoScroll = true;
             panel_supplier_info.AutoSize = true;
+            panel_supplier_info.Controls.Add(txtbox_supplier_no_swap);
+            panel_supplier_info.Controls.Add(lbl_swap);
             panel_supplier_info.Controls.Add(txtbox_contact_phone);
             panel_supplier_info.Controls.Add(txtbox_spa_email);
             panel_supplier_info.Controls.Add(label_spa_email);
@@ -685,8 +689,52 @@
             panel_supplier_info.Dock = DockStyle.Fill;
             panel_supplier_info.Location = new Point(0, 129);
             panel_supplier_info.Name = "panel_supplier_info";
-            panel_supplier_info.Size = new Size(1469, 541);
+            panel_supplier_info.Size = new Size(1469, 610);
             panel_supplier_info.TabIndex = 102;
+            // 
+            // txtbox_supplier_no_swap
+            // 
+            txtbox_supplier_no_swap.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
+            txtbox_supplier_no_swap.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            txtbox_supplier_no_swap.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            txtbox_supplier_no_swap.BackColor = Color.FromArgb(230, 231, 241);
+            txtbox_supplier_no_swap.BorderStyle = BorderStyle.FixedSingle;
+            txtbox_supplier_no_swap.Cursor = Cursors.IBeam;
+            txtbox_supplier_no_swap.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtbox_supplier_no_swap.ForeColor = Color.FromArgb(51, 54, 62);
+            txtbox_supplier_no_swap.Location = new Point(539, 19);
+            txtbox_supplier_no_swap.Margin = new Padding(4);
+            txtbox_supplier_no_swap.MaxLength = 80;
+            txtbox_supplier_no_swap.Name = "txtbox_supplier_no_swap";
+            txtbox_supplier_no_swap.Size = new Size(267, 34);
+            txtbox_supplier_no_swap.TabIndex = 109;
+            txtbox_supplier_no_swap.TextAlign = HorizontalAlignment.Center;
+            // 
+            // lbl_swap
+            // 
+            lbl_swap.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
+            lbl_swap.AutoSize = true;
+            lbl_swap.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbl_swap.ForeColor = Color.FromArgb(230, 231, 241);
+            lbl_swap.Location = new Point(391, 21);
+            lbl_swap.Margin = new Padding(4, 0, 4, 0);
+            lbl_swap.Name = "lbl_swap";
+            lbl_swap.Size = new Size(132, 28);
+            lbl_swap.TabIndex = 108;
+            lbl_swap.Text = "— SWAP —>";
+            // 
+            // txtbox_contact_phone
+            // 
+            txtbox_contact_phone.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
+            txtbox_contact_phone.BackColor = Color.FromArgb(230, 231, 241);
+            txtbox_contact_phone.CharacterCasing = CharacterCasing.Upper;
+            txtbox_contact_phone.Font = new Font("Segoe UI", 12F);
+            txtbox_contact_phone.ForeColor = Color.FromArgb(51, 54, 62);
+            txtbox_contact_phone.Location = new Point(184, 485);
+            txtbox_contact_phone.Margin = new Padding(4);
+            txtbox_contact_phone.Name = "txtbox_contact_phone";
+            txtbox_contact_phone.Size = new Size(320, 29);
+            txtbox_contact_phone.TabIndex = 5;
             // 
             // txtbox_spa_email
             // 
@@ -738,19 +786,6 @@
             lbl_comments.TabIndex = 101;
             lbl_comments.Text = "COMMENTS";
             // 
-            // txtbox_contact_phone
-            // 
-            txtbox_contact_phone.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
-            txtbox_contact_phone.BackColor = Color.FromArgb(230, 231, 241);
-            txtbox_contact_phone.CharacterCasing = CharacterCasing.Upper;
-            txtbox_contact_phone.Font = new Font("Segoe UI", 12F);
-            txtbox_contact_phone.ForeColor = Color.FromArgb(51, 54, 62);
-            txtbox_contact_phone.Location = new Point(184, 485);
-            txtbox_contact_phone.Margin = new Padding(4);
-            txtbox_contact_phone.Name = "txtbox_contact_phone";
-            txtbox_contact_phone.Size = new Size(320, 29);
-            txtbox_contact_phone.TabIndex = 5;
-            // 
             // form_supplier_info
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -759,7 +794,7 @@
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BackColor = Color.FromArgb(42, 45, 53);
-            ClientSize = new Size(1469, 701);
+            ClientSize = new Size(1469, 770);
             Controls.Add(panel_supplier_info);
             Controls.Add(strip_supplier_info);
             Controls.Add(panel_supplier_name);
@@ -833,5 +868,7 @@
         private Label label_spa_email;
         private TextBox lbl_supplier_name;
         private TextBox txtbox_contact_phone;
+        private TextBox txtbox_supplier_no_swap;
+        private Label lbl_swap;
     }
 }

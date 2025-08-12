@@ -49,6 +49,7 @@
             txtbox_email_cc = new TextBox();
             label1 = new Label();
             txtbox_email_to = new TextBox();
+            bttn_test_email = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             strip_email_info.SuspendLayout();
@@ -57,6 +58,7 @@
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(51, 54, 62);
+            panel1.Controls.Add(bttn_test_email);
             panel1.Controls.Add(combox_email_id);
             panel1.Controls.Add(label4);
             panel1.Controls.Add(txtbox_taskID);
@@ -310,6 +312,23 @@
             txtbox_email_to.Size = new Size(948, 29);
             txtbox_email_to.TabIndex = 1;
             // 
+            // bttn_test_email
+            // 
+            bttn_test_email.BackColor = Color.LightSalmon;
+            bttn_test_email.Cursor = Cursors.Hand;
+            bttn_test_email.Dock = DockStyle.Right;
+            bttn_test_email.FlatStyle = FlatStyle.Flat;
+            bttn_test_email.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            bttn_test_email.ForeColor = Color.FromArgb(51, 54, 62);
+            bttn_test_email.Location = new Point(872, 0);
+            bttn_test_email.Margin = new Padding(4);
+            bttn_test_email.Name = "bttn_test_email";
+            bttn_test_email.Size = new Size(105, 104);
+            bttn_test_email.TabIndex = 22;
+            bttn_test_email.Text = "TEST";
+            bttn_test_email.UseVisualStyleBackColor = false;
+            bttn_test_email.Click += bttn_test_email_Click;
+            // 
             // form_email_info
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -352,5 +371,6 @@
         private ToolStripStatusLabel strip_time;
         private ToolStripStatusLabel strip_message;
         private TextBox txtbox_email_message;
+        private Button bttn_test_email;
     }
 }

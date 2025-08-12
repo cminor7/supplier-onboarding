@@ -35,7 +35,7 @@ namespace ONBOARDING
 		{
 			return taskID switch
 			{
-				"2A" => Task_2A(supNo, profile),
+				"1H" => Task_1H(supNo, profile),
 				"2B" => Task_2B(supNo, profile),
 				"2C" =>	Task_2C(supNo, profile),
 				"3E" => Task_3E(supNo, profile),
@@ -46,11 +46,11 @@ namespace ONBOARDING
 			};
 		}
 
-		private static bool Task_2A(string supNo, string profile)
+		private static bool Task_1H(string supNo, string profile)
 		{
 			object result = ExecuteScalarQuery($"SELECT COUNT(*) FROM Itemmanagement.dbo.tblSupplier WHERE [Supplier No] = '{supNo}'");
 			bool hasValue = result != null && Convert.ToInt32(result) >= 1;
-			if (hasValue) { CompleteAutoTask("2A", supNo, profile); return true; } 
+			if (hasValue) { CompleteAutoTask("1H", supNo, profile); return true; } 
 			else return false;
 		}
 
@@ -78,14 +78,19 @@ namespace ONBOARDING
 
 		private static bool Task_3E(string supNo, string profile)
 		{
-			DataView npiItemV = SnowflakeView($"SELECT vendor_no, MIN(vendor_npi_enter) AS MIN_DATE FROM TERADATA.PURCHASING.NPI_REPORT_ITEM_V WHERE vendor_no = '{supNo}' GROUP BY ALL");
+			//DataView npiItemV = SnowflakeView($"SELECT vendor_no, MIN(vendor_npi_enter) AS MIN_DATE FROM TERADATA.PURCHASING.NPI_REPORT_ITEM_V WHERE vendor_no = '{supNo}' GROUP BY ALL");
+
+			DataView npiItemV = SnowflakeView($@"SELECT BATCH_NO_NPI, VENDOR_NAME, VENDOR_NO 
+				FROM TERADATA.PRD_DWH_VIEW_MTRL.NPI_REPORT_ITEM_V 
+				WHERE BATCH_NO_NPI IS NOT NULL AND VENDOR_NO = '{supNo}';");
 			if (npiItemV.Count == 0) return false;
 			
-			DataRowView record = npiItemV[0];
-			bool recordIsNotNull = !record.Row.IsNull("MIN_DATE");
-
-			if (recordIsNotNull) {CompleteAutoTask("3E", supNo, profile); return true; } 
-			else return false;
+			/*DataRowView record = npiItemV[0];
+			bool recordIsNotNull = !record.Row.IsNull("MIN_DATE"); */
+			/*if (recordIsNotNull) {CompleteAutoTask("3E", supNo, profile); return true; } 
+			else return false;*/
+			CompleteAutoTask("3E", supNo, profile); 
+			return true;
 		}
 
 		private static bool Task_3Y(string supNo, string profile)
@@ -99,8 +104,8 @@ namespace ONBOARDING
 			else return false;
 		}
 
-		private static bool Task_3B(string supNo, string profile)
-		{
+		private static bool Task_3B(string supNo, string profile) // BROKEN need to get ZZMMLTPAR7 into snowflake
+        {
 			object result = ExecuteScalarQuery($"SELECT COUNT(*) AS COUNT_OF_ORDER_SCHEDULES FROM Itemmanagement.dbo.tblSupplier_OrderCalendar WHERE Supplier = '{supNo}' AND [DAY] LIKE 'z%'");
 			bool hasOrderSchedule = Convert.ToInt32(result) >= 1;
 			if (hasOrderSchedule) { CompleteAutoTask("3B", supNo, profile); return true; } 

@@ -45,16 +45,20 @@ namespace ONBOARDING
 			Query.UpdateSupplierNumber(minSupplierNo[0]["SUPPLIER_NO"].ToString(), supProfile); // reserve the supplier number in advance to prevent others from using it.
 		}
 
-		private void bttn_submit_profile_Click(object sender, EventArgs e)
+		private async void bttn_submit_profile_Click(object sender, EventArgs e)
 		{
-			var email = new EmailAddressAttribute();
-			if (!(email.IsValid(txtbox_contact_email.Text)))
+            string currentTime = DateTime.Now.ToString("HH:mm:ss");
+            strip_time.Text = currentTime;
+			strip_message.Text = $"HANG ON, I'M SUBMITTING THE FORM...  ─=≡Σʕっ•ᴥ•ʔっ";
+
+            var email = new EmailAddressAttribute();
+			if (!(email.IsValid(txtbox_contact_email.Text))) // check if email is correct format
 			{
 				MessageBox.Show("ENTER A VALID EMAIL  ヾ( ･`⌓´･)ﾉﾞ", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-            if (!(Regex.Replace(txtbox_contact_phone.Text, @"[\s-]", "").All(char.IsDigit)))
+            if (!(Regex.Replace(txtbox_contact_phone.Text, @"[\s-]", "").All(char.IsDigit))) // check if phone number is correct format
 			{
                 MessageBox.Show("ONLY NUMBERS ALLOWED FOR PHONE NUMBER  ヾ( ･`⌓´･)ﾉﾞ", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -62,7 +66,7 @@ namespace ONBOARDING
 
             foreach (Control ctrl in panel_supplier_info.Controls) // check if any required fields are empty
 			{
-				if (ctrl.Name == "panel_single_request" || ctrl.Name == "txtbox_comments" || ctrl is Label || ctrl.Name == "combox_pm_code") continue;
+				if (ctrl.Name == "panel_single_request" || ctrl.Name == "txtbox_comments" || ctrl is Label || ctrl is StatusStrip) continue;
 				if (string.IsNullOrWhiteSpace(ctrl.Text))
 				{
 					if (ctrl.Name == "combox_supplier_state" && combox_supplier_country.Text != "USA (US)" && combox_supplier_country.Text != "CANADA (CA)") continue;
@@ -70,10 +74,11 @@ namespace ONBOARDING
 					return;
 				}
 			}
-			DialogResult result = MessageBox.Show("SUBMIT SUPPLIER INFO  (´･ω･`)?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-			if (result == DialogResult.No) return;
 
-			string smRacfid = Regex.Matches(combox_sm_name.Text, @"\((.+?)\)")[0].Groups[1].Value;
+            DialogResult result = MessageBox.Show("SUBMIT SUPPLIER INFO  (´･ω･`)?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No) return;
+
+            string smRacfid = Regex.Matches(combox_sm_name.Text, @"\((.+?)\)")[0].Groups[1].Value;
 			SMSEmployee.RowFilter = $"COMPUTERID = '{smRacfid}'";
 			string smName = SMSEmployee[0]["EMPLOYEE"].ToString();
 			string smEmail = SMSEmployee[0]["EMAIL"].ToString();
@@ -100,6 +105,33 @@ namespace ONBOARDING
 				 smName, smRacfid, smEmail, smRole, requestorRacfid };
 			string valueString = string.Join(",", onboardingValues.Select(value => $"'{value}'"));
 
+			try
+			{
+				bttn_submit_profile.Enabled = false; // disable sumbit button to prevent double press
+                await Task.Run(() =>
+                {
+                    Parallel.Invoke(
+                        () => File.Copy(contactForm, destinationFilePath, true), // create excel template
+                        () => Query.InsertSupplierInfo(valueString), // insert supplier into ISP.SPM.SUPPLIER_ONBOARDING_SUPPLIER
+                        () => Query.InsertTaskTrack(supNo, supProfile) // insert supplier into ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK
+                    );
+
+                    Parallel.Invoke(
+                        () => SendTaskCompleteEmails("1A", supNo, supProfile),
+                        () => Query.CompleteFirstTask(supNo),
+                        () => Query.InitiateSecondTask(supNo)
+                    );
+                });
+            }
+			finally
+			{
+				bttn_submit_profile.Enabled = true;
+                currentTime = DateTime.Now.ToString("HH:mm:ss");
+                strip_time.Text = currentTime;
+                strip_message.Text = $"SUCCESS!  ( ﾉ･o･ )ﾉ";
+			}
+
+            /*
 			Parallel.Invoke(() => File.Copy(contactForm, destinationFilePath, true), 
 				() => Query.InsertSupplierInfo(valueString), 
 				() => Query.InsertTaskTrack(supNo, supProfile));
@@ -108,9 +140,10 @@ namespace ONBOARDING
 			Parallel.Invoke(() => SendTaskCompleteEmails("1A", supNo, supProfile), 
 				() => Query.CompleteFirstTask(supNo), 
 				() => Query.InitiateSecondTask(supNo));
+			*/
 
-			MessageBox.Show($"SUPPLIER <{supNo}> HAS BEEN ADDED  ( ﾉ･o･ )ﾉ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-			this.Close();
+            MessageBox.Show($"SUPPLIER <{supNo}> HAS BEEN ADDED  ( ﾉ･o･ )ﾉ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Close();
 		}
 
 		private void combox_supplier_country_Leave(object sender, EventArgs e)

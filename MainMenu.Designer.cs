@@ -32,6 +32,7 @@
             bttn_refresh_tables = new Button();
             bttn_single_request = new Button();
             panel_main_menu = new Panel();
+            bttn_reminder_email = new Button();
             bttn_email_info = new Button();
             bttn_supplier_info = new Button();
             bttn_supplier_task = new Button();
@@ -46,6 +47,7 @@
             report_power_bi = new ToolStripMenuItem();
             menu_help = new ToolStripMenuItem();
             help_manual = new ToolStripMenuItem();
+            help_process_map = new ToolStripMenuItem();
             panel1 = new Panel();
             txtbox_version = new TextBox();
             panel_main_menu.SuspendLayout();
@@ -77,7 +79,7 @@
             // 
             // bttn_single_request
             // 
-            bttn_single_request.BackColor = Color.SkyBlue;
+            bttn_single_request.BackColor = Color.LightSalmon;
             bttn_single_request.Cursor = Cursors.Hand;
             bttn_single_request.FlatAppearance.BorderSize = 0;
             bttn_single_request.FlatStyle = FlatStyle.Flat;
@@ -85,7 +87,7 @@
             bttn_single_request.ForeColor = Color.FromArgb(51, 54, 62);
             bttn_single_request.ImageAlign = ContentAlignment.MiddleLeft;
             bttn_single_request.ImageIndex = 0;
-            bttn_single_request.Location = new Point(46, 338);
+            bttn_single_request.Location = new Point(46, 411);
             bttn_single_request.Name = "bttn_single_request";
             bttn_single_request.Size = new Size(225, 52);
             bttn_single_request.TabIndex = 0;
@@ -100,6 +102,7 @@
             panel_main_menu.AutoScroll = true;
             panel_main_menu.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             panel_main_menu.BackColor = Color.FromArgb(51, 54, 62);
+            panel_main_menu.Controls.Add(bttn_reminder_email);
             panel_main_menu.Controls.Add(bttn_email_info);
             panel_main_menu.Controls.Add(bttn_supplier_info);
             panel_main_menu.Controls.Add(bttn_supplier_task);
@@ -113,6 +116,27 @@
             panel_main_menu.Size = new Size(321, 670);
             panel_main_menu.TabIndex = 11;
             // 
+            // bttn_reminder_email
+            // 
+            bttn_reminder_email.BackColor = Color.SkyBlue;
+            bttn_reminder_email.BackgroundImageLayout = ImageLayout.Zoom;
+            bttn_reminder_email.Cursor = Cursors.Hand;
+            bttn_reminder_email.FlatAppearance.BorderSize = 0;
+            bttn_reminder_email.FlatStyle = FlatStyle.Flat;
+            bttn_reminder_email.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            bttn_reminder_email.ForeColor = Color.FromArgb(51, 54, 62);
+            bttn_reminder_email.ImageAlign = ContentAlignment.MiddleLeft;
+            bttn_reminder_email.Location = new Point(46, 263);
+            bttn_reminder_email.Margin = new Padding(4);
+            bttn_reminder_email.Name = "bttn_reminder_email";
+            bttn_reminder_email.Size = new Size(225, 52);
+            bttn_reminder_email.TabIndex = 21;
+            bttn_reminder_email.Text = "REMINDER EMAIL";
+            bttn_reminder_email.TextAlign = ContentAlignment.MiddleLeft;
+            bttn_reminder_email.TextImageRelation = TextImageRelation.ImageBeforeText;
+            bttn_reminder_email.UseVisualStyleBackColor = false;
+            bttn_reminder_email.Click += bttn_reminder_email_Click;
+            // 
             // bttn_email_info
             // 
             bttn_email_info.BackColor = Color.SkyBlue;
@@ -123,7 +147,7 @@
             bttn_email_info.ForeColor = Color.FromArgb(51, 54, 62);
             bttn_email_info.ImageAlign = ContentAlignment.MiddleLeft;
             bttn_email_info.ImageIndex = 0;
-            bttn_email_info.Location = new Point(46, 506);
+            bttn_email_info.Location = new Point(46, 579);
             bttn_email_info.Name = "bttn_email_info";
             bttn_email_info.Size = new Size(225, 52);
             bttn_email_info.TabIndex = 20;
@@ -143,7 +167,7 @@
             bttn_supplier_info.ForeColor = Color.FromArgb(51, 54, 62);
             bttn_supplier_info.ImageAlign = ContentAlignment.MiddleLeft;
             bttn_supplier_info.ImageIndex = 0;
-            bttn_supplier_info.Location = new Point(46, 422);
+            bttn_supplier_info.Location = new Point(46, 495);
             bttn_supplier_info.Name = "bttn_supplier_info";
             bttn_supplier_info.Size = new Size(225, 52);
             bttn_supplier_info.TabIndex = 19;
@@ -179,7 +203,7 @@
             lbl_new_supplier.AutoSize = true;
             lbl_new_supplier.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lbl_new_supplier.ForeColor = Color.FromArgb(230, 231, 241);
-            lbl_new_supplier.Location = new Point(47, 280);
+            lbl_new_supplier.Location = new Point(47, 353);
             lbl_new_supplier.Name = "lbl_new_supplier";
             lbl_new_supplier.Size = new Size(170, 30);
             lbl_new_supplier.TabIndex = 13;
@@ -268,7 +292,7 @@
             // 
             // menu_help
             // 
-            menu_help.DropDownItems.AddRange(new ToolStripItem[] { help_manual });
+            menu_help.DropDownItems.AddRange(new ToolStripItem[] { help_manual, help_process_map });
             menu_help.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             menu_help.ForeColor = Color.FromArgb(230, 231, 241);
             menu_help.Margin = new Padding(1);
@@ -284,6 +308,14 @@
             help_manual.Size = new Size(207, 26);
             help_manual.Text = "MANUAL";
             help_manual.Click += help_manual_Click;
+            // 
+            // help_process_map
+            // 
+            help_process_map.Margin = new Padding(3);
+            help_process_map.Name = "help_process_map";
+            help_process_map.Size = new Size(207, 26);
+            help_process_map.Text = "PROCESS MAP";
+            help_process_map.Click += help_process_map_Click;
             // 
             // panel1
             // 
@@ -307,7 +339,7 @@
             txtbox_version.Name = "txtbox_version";
             txtbox_version.Size = new Size(65, 29);
             txtbox_version.TabIndex = 18;
-            txtbox_version.Text = "v1.3.4";
+            txtbox_version.Text = "v1.5.1";
             // 
             // MainMenu
             // 
@@ -362,5 +394,7 @@
         private Panel panel1;
         private TextBox txtbox_version;
         private Button bttn_email_info;
+        private Button bttn_reminder_email;
+        private ToolStripMenuItem help_process_map;
     }
 }
