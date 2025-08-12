@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Data;
 using static ONBOARDING.DBConnection;
-using Org.BouncyCastle.Bcpg;
 
 
 namespace ONBOARDING
@@ -9,6 +8,8 @@ namespace ONBOARDING
 	internal class Email
 	{
 		static readonly DataView secret = SnowflakeView("SELECT TO_VARCHAR(DECRYPT(API_KEY, '-sAlly$N3verLies!'), 'UTF-8') AS API_KEY FROM ISP.RA.SMTP_SECRET;");
+		public static readonly DataView userEmail = SnowflakeView($"SELECT USERNAME, WORK_EMAIL FROM PUBLISH.GSCCE.EMPLOYEE_EDV WHERE USERNAME = '{Environment.UserName}';");
+		static public readonly string successResponse = @"<?xml version=""1.0"" encoding=""utf-8""?><soap:Envelope xmlns:soap=""http://www.w3.org/2003/05/soap-envelope"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema""><soap:Body><SMTPEmailResponse xmlns=""http://www.supplierconnect.com/LINUX_RULES""><SMTPEmailResult /></SMTPEmailResponse></soap:Body></soap:Envelope>";
 
         public static string ConvertFileToHexString(string filePath)
 		{
@@ -18,7 +19,7 @@ namespace ONBOARDING
 		}
 
 		// How to use
-		//  _ = Task.Run(function: async () => await EMAIL.SMTP("", "", "", "", "", ""));
+		//  _ = Task.Run(function: async () => await EMAIL.SMTP("from", "to", "cc", "subject", "message", "attachment"));
 		public static async Task<string> SMTP(string emFrom, string emTo, string emCC, string emSubject, string emMessage, string emAttachment)
 		{
 			if (!string.IsNullOrEmpty(emAttachment)) {
@@ -55,8 +56,23 @@ namespace ONBOARDING
 
 			HttpResponseMessage response = await PostXmlRequest(url, soapString);
 			string content = await response.Content.ReadAsStringAsync();
-			//MessageBox.Show(content);
-			return content;
+            /*int sentCount = 0;
+            while ((content != successResponse || string.IsNullOrWhiteSpace(content) || response == null) && sentCount < 5) // retry to send email if it doesn't go through the first time
+			{
+				await Task.Delay(1000);
+                response = await PostXmlRequest(url, soapString);
+                content = await response.Content.ReadAsStringAsync();
+				sentCount++;
+            }*/
+
+            /*
+            if (content != successResponse || string.IsNullOrWhiteSpace(content) || response == null) // If it still can't send show message
+			{
+                MessageBox.Show(content);
+            }
+			*/
+            await Task.Delay(2000); // pause for 2 second to give the server some time to process the email before moving to the next one
+            return content;
 		}
 
 		public static async Task<HttpResponseMessage> PostXmlRequest(string baseUrl, string xmlString)
@@ -66,7 +82,7 @@ namespace ONBOARDING
 			return await httpClient.PostAsync(baseUrl, httpContent);
 		}
 
-		public static void SendTaskCompleteEmails(string taskID, string supNo, string profile)
+		public static async void SendTaskCompleteEmails(string taskID, string supNo, string profile)
 		{
 			DataView supplierInfo = Query.SupplierInfo(supNo, false); 
 			DataView emailTable = SnowflakeView($"SELECT * FROM ISP.SPM.SUPPLIER_ONBOARDING_EMAIL WHERE TASKID = '{taskID}' AND PROFILE = '{profile}'");
@@ -87,6 +103,7 @@ namespace ONBOARDING
 				string sm = row["SM"].ToString();
 				string spa = row["SPA"].ToString();
 				string customFile = row["CUSTOM_ATTACHMENT"].ToString();
+				string emailID = row["EMAIL_ID"].ToString();
 
 				if (customFile == "True") emAttachment = @$"\\us.grainger.com\files\Office\LF\DB\PM\MerchandisingDBs\New Supplier Onboarding\Vendor Masters\{supNo}_New Supplier Contact Form.xlsx";
 				if (!string.IsNullOrEmpty(supplierDestination))
@@ -100,8 +117,16 @@ namespace ONBOARDING
 				if (spa.Contains("CC")) emCC += $";{spaEmail}";
 				if (sm.Contains("TO")) emTo += $";{smEmail}";
 				if (spa.Contains("TO")) emTo += $";{spaEmail}";
-				_ = Task.Run(function: async () => await SMTP(emFrom, emTo, emCC, emSubject, emMessage, emAttachment));
-			}
+				//_ = Task.Run(function: async () => await SMTP(emFrom, emTo, emCC, emSubject, emMessage, emAttachment));
+
+				string response = await SMTP(emFrom, emTo, emCC, emSubject, emMessage, emAttachment);
+
+                if (response != successResponse || string.IsNullOrWhiteSpace(response)) // If it still can't send show message
+                {
+                    MessageBox.Show($"POTENTIAL FAILED EMAIL - {emailID}: " + response, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
 		}
-	}
+
+    }
 }

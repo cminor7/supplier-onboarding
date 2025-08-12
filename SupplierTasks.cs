@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Windows.UI.Text;
 using static ONBOARDING.DBConnection;
 using static ONBOARDING.Email;
 
@@ -93,7 +92,12 @@ namespace ONBOARDING
 			string initiatedValue = dgv_tasks.Rows[e.RowIndex].Cells["INITIATED"].Value.ToString();
 			var autoCompleteValue = (bool)dgv_tasks.Rows[e.RowIndex].Cells["AUTO_COMPLETED"].Value;
 			var backendCheckValue = (bool)dgv_tasks.Rows[e.RowIndex].Cells["BACKEND_CHECK"].Value;
-			if (!string.IsNullOrEmpty(completeValue)) return;
+
+			/*if (!string.IsNullOrEmpty(completeValue))
+			{
+                DialogResult result = MessageBox.Show($"RE-TRY COMPLETE TASK <{taskID}>  (´･ω･`)?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No) return;
+			}*/
 
 			if (e.ColumnIndex == dgv_tasks.Columns["TASK_BUTTON"].Index && e.RowIndex >= 0) // handles complete button column
 			{
@@ -111,8 +115,8 @@ namespace ONBOARDING
 					string statusMessage = $"TASK <{taskID}> HAS NOT BEEN COMPLETED - CONDITION(S) NOT SATISFIED  ヾ( ･`⌓´･)ﾉﾞ";
 					if (BackendCheck.CompleteBackend(supNo, profile, taskID)) statusMessage = $"TASK <{taskID}> HAS BEEN COMPLETED  ( • ̀ω•́ )✧";
 					RefreshDataGridView(supNo, statusMessage);
-					return;
-				}
+					//return; //SET CONDITION TO NOT RETURN IF IT IS LAST TASK
+				} 
 				Query.CompleteTasks(supNo, taskID);
 				Parallel.Invoke(() => InitiateNextTask(taskID, supNo, profile), () => SendTaskCompleteEmails(taskID, supNo, profile));
 				RefreshDataGridView(supNo, $"TASK <{taskID}> HAS BEEN COMPLETED  ( • ̀ω•́ )✧");
@@ -137,7 +141,7 @@ namespace ONBOARDING
 					Parallel.Invoke(() => Query.InitiateTasks(supNo, "6Z"), 
 						() => SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK SET INITIATED = CURRENT_DATE, COMPLETED = CURRENT_DATE WHERE SUPPLIER_NO = '{supNo}' AND TASKID = '6Z'"),
 						() => SendTaskCompleteEmails("6Z", supNo, profile),
-						() => SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_SUPPLIER SET STATUS = 'COMPLETE' WHERE SUPPLIER_NO = '{supNo}'"),
+						() => SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_SUPPLIER SET STATUS = 'COMPLETE', COMPLETE_DATE = CURRENT_DATE WHERE SUPPLIER_NO = '{supNo}'"),
 						() => SQLCommand($"UPDATE ITEMMANAGEMENT.DBO.SUPPLIER_ALIGNMENT SET STANDING = 'New' WHERE SUPPLIERNUMBER = {supNo}"));
 					RefreshDataGridView(supNo, "SUPPLIER ONBOARDING COMPLETED  ( ﾉ･o･ )ﾉ");
 					strip_status.Text = "COMPLETE";

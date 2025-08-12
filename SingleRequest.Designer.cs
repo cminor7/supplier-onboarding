@@ -69,8 +69,13 @@
             lbl_comments = new Label();
             txtbox_spa_email = new TextBox();
             label_spa_email = new Label();
+            strip_single_request = new StatusStrip();
+            toolStripSplitButton1 = new ToolStripSplitButton();
+            strip_time = new ToolStripStatusLabel();
+            strip_message = new ToolStripStatusLabel();
             panel_single_request.SuspendLayout();
             panel_supplier_info.SuspendLayout();
+            strip_single_request.SuspendLayout();
             SuspendLayout();
             // 
             // combox_profile
@@ -528,6 +533,7 @@
             // 
             panel_supplier_info.AutoScroll = true;
             panel_supplier_info.AutoSize = true;
+            panel_supplier_info.Controls.Add(strip_single_request);
             panel_supplier_info.Controls.Add(txtbox_contact_phone);
             panel_supplier_info.Controls.Add(txtbox_comments);
             panel_supplier_info.Controls.Add(lbl_comments);
@@ -634,6 +640,47 @@
             label_spa_email.TabIndex = 18;
             label_spa_email.Text = "SPA EMAIL";
             // 
+            // strip_single_request
+            // 
+            strip_single_request.BackColor = Color.FromArgb(32, 35, 43);
+            strip_single_request.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            strip_single_request.ImageScalingSize = new Size(20, 20);
+            strip_single_request.Items.AddRange(new ToolStripItem[] { toolStripSplitButton1, strip_time, strip_message });
+            strip_single_request.Location = new Point(0, 560);
+            strip_single_request.Name = "strip_single_request";
+            strip_single_request.Padding = new Padding(1, 0, 12, 0);
+            strip_single_request.Size = new Size(1476, 31);
+            strip_single_request.TabIndex = 103;
+            // 
+            // toolStripSplitButton1
+            // 
+            toolStripSplitButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripSplitButton1.Image = Properties.Resources.grainger_logo;
+            toolStripSplitButton1.ImageTransparentColor = Color.Magenta;
+            toolStripSplitButton1.Margin = new Padding(2);
+            toolStripSplitButton1.Name = "toolStripSplitButton1";
+            toolStripSplitButton1.Padding = new Padding(3);
+            toolStripSplitButton1.Size = new Size(42, 27);
+            toolStripSplitButton1.Text = "toolStripSplitButton1";
+            // 
+            // strip_time
+            // 
+            strip_time.ForeColor = Color.FromArgb(230, 231, 241);
+            strip_time.Margin = new Padding(2);
+            strip_time.Name = "strip_time";
+            strip_time.Padding = new Padding(3);
+            strip_time.Size = new Size(76, 27);
+            strip_time.Text = "00:00:00";
+            // 
+            // strip_message
+            // 
+            strip_message.ForeColor = Color.FromArgb(230, 231, 241);
+            strip_message.Margin = new Padding(2);
+            strip_message.Name = "strip_message";
+            strip_message.Padding = new Padding(3);
+            strip_message.Size = new Size(308, 27);
+            strip_message.Text = "WELCOME TO SINGLE REQUEST  ( ˶°ㅁ°) !!";
+            // 
             // form_single_request
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -656,6 +703,8 @@
             panel_single_request.PerformLayout();
             panel_supplier_info.ResumeLayout(false);
             panel_supplier_info.PerformLayout();
+            strip_single_request.ResumeLayout(false);
+            strip_single_request.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -702,5 +751,9 @@
         private Label label_spa_email;
         private TextBox txtbox_comments;
         private TextBox txtbox_contact_phone;
+        private StatusStrip strip_single_request;
+        private ToolStripSplitButton toolStripSplitButton1;
+        private ToolStripStatusLabel strip_time;
+        private ToolStripStatusLabel strip_message;
     }
 }
