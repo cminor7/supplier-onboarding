@@ -1,5 +1,6 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+//using System.Data.SqlClient; deprecated
+using Microsoft.Data.SqlClient;
 using Snowflake.Data.Client;
 
 namespace ONBOARDING
@@ -8,7 +9,8 @@ namespace ONBOARDING
 	{
 		readonly private static string racfid = Environment.UserName.ToUpper();
 		readonly private static string sfConnString = $"account=wwgrainger.us-east-1;user={racfid};authenticator=externalbrowser;database=TERADATA;warehouse=GSCCE_ETL_S;role=ISP_SVC";
-		readonly private static string sqlConnString = "Data Source=PR-ITMGMT.us.grainger.com; Initial Catalog=Itemmanagement;Integrated Security=true";
+		//readonly private static string sqlConnString = "Data Source=PR-ITMGMT.us.grainger.com; Initial Catalog=Itemmanagement;Integrated Security=true";
+        readonly private static string sqlConnString = "Server=PR-ITMGMT.us.grainger.com;Database=Itemmanagement;Integrated Security = true; TrustServerCertificate=true";
 		readonly private static SnowflakeDbConnection sfConn = new(sfConnString);
 		readonly private static SqlConnection sqlConn = new(sqlConnString);
 
@@ -32,16 +34,19 @@ namespace ONBOARDING
 			return dv;
 		}
 
+		/*
 		public static object ExecuteScalarQuery(string query)
 		{
 			if (sqlConn.State == ConnectionState.Closed || sqlConn.State == ConnectionState.Broken) sqlConn.Open();
 			SqlCommand sqlCmd = new(query, sqlConn);
 			return sqlCmd.ExecuteScalar();
 		}
+		*/
 
 		public static DataView SQLView(string query)
 		{
 			if (sqlConn.State == ConnectionState.Closed || sqlConn.State == ConnectionState.Broken) sqlConn.Open();
+			
 			SqlCommand sqlCmd = new(query, sqlConn);
 			SqlDataReader reader = sqlCmd.ExecuteReader();
 			DataTable dataTable = new();

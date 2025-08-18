@@ -702,13 +702,15 @@
             txtbox_supplier_no_swap.Cursor = Cursors.IBeam;
             txtbox_supplier_no_swap.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtbox_supplier_no_swap.ForeColor = Color.FromArgb(51, 54, 62);
-            txtbox_supplier_no_swap.Location = new Point(539, 19);
+            txtbox_supplier_no_swap.Location = new Point(551, 19);
             txtbox_supplier_no_swap.Margin = new Padding(4);
             txtbox_supplier_no_swap.MaxLength = 80;
             txtbox_supplier_no_swap.Name = "txtbox_supplier_no_swap";
-            txtbox_supplier_no_swap.Size = new Size(267, 34);
+            txtbox_supplier_no_swap.Size = new Size(270, 34);
             txtbox_supplier_no_swap.TabIndex = 109;
+            txtbox_supplier_no_swap.Text = "DOESN'T WORK YET";
             txtbox_supplier_no_swap.TextAlign = HorizontalAlignment.Center;
+            txtbox_supplier_no_swap.KeyPress += txtbox_supplier_no_swap_KeyPress;
             // 
             // lbl_swap
             // 
@@ -716,7 +718,7 @@
             lbl_swap.AutoSize = true;
             lbl_swap.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lbl_swap.ForeColor = Color.FromArgb(230, 231, 241);
-            lbl_swap.Location = new Point(391, 21);
+            lbl_swap.Location = new Point(402, 21);
             lbl_swap.Margin = new Padding(4, 0, 4, 0);
             lbl_swap.Name = "lbl_swap";
             lbl_swap.Size = new Size(132, 28);

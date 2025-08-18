@@ -79,7 +79,6 @@ namespace ONBOARDING
                 emailAttachment = emailIDRow["EMAIL_ATTACHMENT"].ToString();
             }
 
-            //emailAttachment = @"C:\Users\xjxc605\OneDrive - W.W Grainger, inc\Desktop\AUTOSTOFailures-email.csv";
 
             string response = await Email.SMTP("supplier_onboarding@grainger.com", userEmail, "", emailSubject, emailMessage, emailAttachment);
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
