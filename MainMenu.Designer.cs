@@ -339,7 +339,7 @@
             txtbox_version.Name = "txtbox_version";
             txtbox_version.Size = new Size(65, 29);
             txtbox_version.TabIndex = 18;
-            txtbox_version.Text = "v1.5.1";
+            txtbox_version.Text = "v1.5.3";
             // 
             // MainMenu
             // 

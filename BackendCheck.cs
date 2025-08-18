@@ -48,32 +48,42 @@ namespace ONBOARDING
 
 		private static bool Task_1H(string supNo, string profile)
 		{
-			object result = ExecuteScalarQuery($"SELECT COUNT(*) FROM Itemmanagement.dbo.tblSupplier WHERE [Supplier No] = '{supNo}'");
-			bool hasValue = result != null && Convert.ToInt32(result) >= 1;
-			if (hasValue) { CompleteAutoTask("1H", supNo, profile); return true; } 
-			else return false;
+			DataView result = SQLView($"SELECT * FROM Itemmanagement.dbo.tblSupplier WHERE [Supplier No] = '{supNo}'");
+			//bool hasValue = result != null && Convert.ToInt32(result) >= 1;
+			//if (hasValue) { CompleteAutoTask("1H", supNo, profile); return true; }
+			if (result.Count == 0) return false;
+
+            CompleteAutoTask("1H", supNo, profile);
+            return true;
 		}
 
 		private static bool Task_2B(string supNo, string profile)
 		{
-			object result = ExecuteScalarQuery($@"SELECT 
+			DataView result = SQLView($@"SELECT 
 						CASE 
 							WHEN COUNT(CASE WHEN [role] = 'Operations' THEN 1 END) > 0 AND COUNT(CASE WHEN [role] = 'Primary' THEN 1 END) > 0 
-							THEN 1 
-							ELSE 0 
+							THEN 'TRUE' 
+							ELSE 'FALSE'
 							END AS has_both_roles
 					FROM Itemmanagement.dbo.tblResponsibilities
 					WHERE supplier = '{supNo}'");
-			bool hasBothValues = result != null && Convert.ToInt32(result) == 1;
-			if (hasBothValues){ CompleteAutoTask("2B", supNo, profile); return true; } 
-			else return false;
+			//bool hasBothValues = result != null && Convert.ToInt32(result) == 1;
+			//if (hasBothValues){ CompleteAutoTask("2B", supNo, profile); return true; }
+
+			
+			if (result[0]["has_both_roles"].ToString() == "TRUE") return false;
+
+            CompleteAutoTask("2B", supNo, profile); 
+			return true;
 		}
 
 		private static bool Task_2C(string supNo, string profile)
 		{
 			DataView supplierConnect = SnowflakeView($"SELECT VENDOR FROM TERADATA.PRD_DWH_VIEW_LMT.AUTH0_ACTIVE_VENDORS_INFO_VIEW WHERE TRY_TO_NUMBER(VENDOR) = '{supNo}'");
-			if (supplierConnect.Count > 0) { CompleteAutoTask("2C", supNo, profile); return true; }
-			else return false;
+
+			if (supplierConnect.Count == 0) return false;
+			CompleteAutoTask("2C", supNo, profile);
+			return true;
 		}
 
 		private static bool Task_3E(string supNo, string profile)
@@ -82,7 +92,7 @@ namespace ONBOARDING
 
 			DataView npiItemV = SnowflakeView($@"SELECT BATCH_NO_NPI, VENDOR_NAME, VENDOR_NO 
 				FROM TERADATA.PRD_DWH_VIEW_MTRL.NPI_REPORT_ITEM_V 
-				WHERE BATCH_NO_NPI IS NOT NULL AND VENDOR_NO = '{supNo}';");
+				WHERE BATCH_NO_NPI IS NOT NULL AND VENDOR_NO = '{supNo}'");
 			if (npiItemV.Count == 0) return false;
 			
 			/*DataRowView record = npiItemV[0];
@@ -96,31 +106,42 @@ namespace ONBOARDING
 		private static bool Task_3Y(string supNo, string profile)
 		{
 			DataView tblMaterial = SQLView($"SELECT MIN([Create Date]) AS MIN_DATE FROM Itemmanagement.dbo.tblMaterials WHERE [Supplier No] = '{supNo}'");
-			string rawDateCompleted = tblMaterial[0]["MIN_DATE"].ToString();
-			if (!DateTime.TryParse(rawDateCompleted, out DateTime parsedDate)) return false;
+			string minDate = tblMaterial[0]["MIN_DATE"].ToString();
+			//if (!DateTime.TryParse(rawDateCompleted, out DateTime parsedDate)) return false;
 
-			string dateCompleted = parsedDate.ToString("yyyy-MM-dd");
-			if (!string.IsNullOrEmpty(dateCompleted)) { CompleteAutoTask("3Y", supNo, profile); return true; } 
-			else return false;
+			if (string.IsNullOrEmpty(minDate)) return false;
+
+            //string dateCompleted = parsedDate.ToString("yyyy-MM-dd");
+            //if (!string.IsNullOrEmpty(dateCompleted)) { CompleteAutoTask("3Y", supNo, profile); return true; }
+
+
+            CompleteAutoTask("3Y", supNo, profile);
+            return true;
+			//else return false;
 		}
 
 		private static bool Task_3B(string supNo, string profile) // BROKEN need to get ZZMMLTPAR7 into snowflake
         {
-			object result = ExecuteScalarQuery($"SELECT COUNT(*) AS COUNT_OF_ORDER_SCHEDULES FROM Itemmanagement.dbo.tblSupplier_OrderCalendar WHERE Supplier = '{supNo}' AND [DAY] LIKE 'z%'");
-			bool hasOrderSchedule = Convert.ToInt32(result) >= 1;
-			if (hasOrderSchedule) { CompleteAutoTask("3B", supNo, profile); return true; } 
-			else return false;
-		}
+			DataView result = SQLView($"SELECT * AS COUNT_OF_ORDER_SCHEDULES FROM Itemmanagement.dbo.tblSupplier_OrderCalendar WHERE Supplier = '{supNo}' AND [DAY] LIKE 'z%'");
+			//bool hasOrderSchedule = Convert.ToInt32(result) >= 1;
+			//if (hasOrderSchedule) { CompleteAutoTask("3B", supNo, profile); return true; } 
+			if (result.Count == 0) return false;
+
+            CompleteAutoTask("3B", supNo, profile);
+            return true;
+        }
 
 		private static bool Task_3F(string supNo, string profile)
 		{
-			DataView resultTable = SnowflakeView($"SELECT COUNT(*) AS PO_OUTPUT FROM TERADATA.PURCHASING.PURCH_NACH_V WHERE VENDOR = '{supNo}' AND OUTPUT_TYPE LIKE 'Z%' AND DIVISION LIKE '%SAL%'");
-			DataRowView result = resultTable[0];
-			int POOutput = Convert.ToInt32(result["PO_OUTPUT"]);
-			bool POOutputCheck = POOutput >= 1;
+			DataView result = SnowflakeView($"SELECT * AS PO_OUTPUT FROM TERADATA.PURCHASING.PURCH_NACH_V WHERE VENDOR = '{supNo}' AND OUTPUT_TYPE LIKE 'Z%' AND DIVISION LIKE '%SAL%'");
+			//DataRowView result = resultTable[0];
+			//int POOutput = Convert.ToInt32(result["PO_OUTPUT"]);
+			//bool POOutputCheck = POOutput >= 1;
 
-			if (POOutputCheck) { CompleteAutoTask("3F", supNo, profile); return true; } 
-			else return false;  
+            if (result.Count == 0) return false;
+
+			CompleteAutoTask("3F", supNo, profile);
+			return true;  
 		}
 		
 		private static void InitiateNextTask(string taskID, string supNo, string supProfile)

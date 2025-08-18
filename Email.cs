@@ -12,9 +12,10 @@ namespace ONBOARDING
 		static public readonly string successResponse = @"<?xml version=""1.0"" encoding=""utf-8""?><soap:Envelope xmlns:soap=""http://www.w3.org/2003/05/soap-envelope"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema""><soap:Body><SMTPEmailResponse xmlns=""http://www.supplierconnect.com/LINUX_RULES""><SMTPEmailResult /></SMTPEmailResponse></soap:Body></soap:Envelope>";
 
         public static string ConvertFileToHexString(string filePath)
-		{
+		{ 
 			byte[] bytes = File.ReadAllBytes(filePath);
 			string hexString = BitConverter.ToString(bytes).Replace("-", string.Empty);
+            
 			return hexString;
 		}
 
@@ -22,12 +23,22 @@ namespace ONBOARDING
 		//  _ = Task.Run(function: async () => await EMAIL.SMTP("from", "to", "cc", "subject", "message", "attachment"));
 		public static async Task<string> SMTP(string emFrom, string emTo, string emCC, string emSubject, string emMessage, string emAttachment)
 		{
-			if (!string.IsNullOrEmpty(emAttachment)) {
+			if (!string.IsNullOrEmpty(emAttachment) && File.Exists(emAttachment)) {
 				emAttachment = Path.GetFileName(emAttachment) + ":" + ConvertFileToHexString(emAttachment);
+			}
+			else
+			{
+				emAttachment = "";
 			}
 
 			emMessage = emMessage.Replace("\n", "<br>");
 			emMessage = $"<div style='padding: 3px; width: 120px; word-wrap: break-word;'>{emMessage}</div>";
+
+			// DELETE THIS //
+
+			//emCC = "jeffrey.cao@grainger.ca";
+			//emTo = "jeffrey.cao@grainger.ca";
+			//
 
 			string TransportProtocol = secret[0]["API_KEY"].ToString();
 
@@ -56,23 +67,10 @@ namespace ONBOARDING
 
 			HttpResponseMessage response = await PostXmlRequest(url, soapString);
 			string content = await response.Content.ReadAsStringAsync();
-            /*int sentCount = 0;
-            while ((content != successResponse || string.IsNullOrWhiteSpace(content) || response == null) && sentCount < 5) // retry to send email if it doesn't go through the first time
-			{
-				await Task.Delay(1000);
-                response = await PostXmlRequest(url, soapString);
-                content = await response.Content.ReadAsStringAsync();
-				sentCount++;
-            }*/
 
-            /*
-            if (content != successResponse || string.IsNullOrWhiteSpace(content) || response == null) // If it still can't send show message
-			{
-                MessageBox.Show(content);
-            }
-			*/
             await Task.Delay(2000); // pause for 2 second to give the server some time to process the email before moving to the next one
             return content;
+			
 		}
 
 		public static async Task<HttpResponseMessage> PostXmlRequest(string baseUrl, string xmlString)

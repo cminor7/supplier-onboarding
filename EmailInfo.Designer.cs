@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(form_email_info));
             panel1 = new Panel();
+            bttn_test_email = new Button();
             combox_email_id = new ComboBox();
             label4 = new Label();
             txtbox_taskID = new TextBox();
@@ -49,7 +50,6 @@
             txtbox_email_cc = new TextBox();
             label1 = new Label();
             txtbox_email_to = new TextBox();
-            bttn_test_email = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             strip_email_info.SuspendLayout();
@@ -72,6 +72,23 @@
             panel1.Size = new Size(1082, 104);
             panel1.TabIndex = 0;
             // 
+            // bttn_test_email
+            // 
+            bttn_test_email.BackColor = Color.LightSalmon;
+            bttn_test_email.Cursor = Cursors.Hand;
+            bttn_test_email.Dock = DockStyle.Right;
+            bttn_test_email.FlatStyle = FlatStyle.Flat;
+            bttn_test_email.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            bttn_test_email.ForeColor = Color.FromArgb(51, 54, 62);
+            bttn_test_email.Location = new Point(872, 0);
+            bttn_test_email.Margin = new Padding(4);
+            bttn_test_email.Name = "bttn_test_email";
+            bttn_test_email.Size = new Size(105, 104);
+            bttn_test_email.TabIndex = 22;
+            bttn_test_email.Text = "TEST";
+            bttn_test_email.UseVisualStyleBackColor = false;
+            bttn_test_email.Click += bttn_test_email_Click;
+            // 
             // combox_email_id
             // 
             combox_email_id.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -84,7 +101,7 @@
             combox_email_id.Margin = new Padding(4);
             combox_email_id.MaxLength = 2;
             combox_email_id.Name = "combox_email_id";
-            combox_email_id.Size = new Size(192, 33);
+            combox_email_id.Size = new Size(186, 33);
             combox_email_id.TabIndex = 0;
             combox_email_id.SelectedValueChanged += combox_email_id_SelectedValueChanged;
             // 
@@ -106,7 +123,7 @@
             txtbox_taskID.BorderStyle = BorderStyle.None;
             txtbox_taskID.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtbox_taskID.ForeColor = Color.FromArgb(230, 231, 241);
-            txtbox_taskID.Location = new Point(475, 52);
+            txtbox_taskID.Location = new Point(468, 52);
             txtbox_taskID.Margin = new Padding(3, 2, 3, 2);
             txtbox_taskID.Name = "txtbox_taskID";
             txtbox_taskID.Size = new Size(130, 22);
@@ -118,7 +135,7 @@
             lbl_task_ID.AutoSize = true;
             lbl_task_ID.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             lbl_task_ID.ForeColor = Color.FromArgb(230, 231, 241);
-            lbl_task_ID.Location = new Point(475, 21);
+            lbl_task_ID.Location = new Point(468, 21);
             lbl_task_ID.Margin = new Padding(1, 0, 1, 0);
             lbl_task_ID.Name = "lbl_task_ID";
             lbl_task_ID.Size = new Size(68, 21);
@@ -131,7 +148,7 @@
             txtbox_sup_profile.BorderStyle = BorderStyle.None;
             txtbox_sup_profile.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtbox_sup_profile.ForeColor = Color.FromArgb(230, 231, 241);
-            txtbox_sup_profile.Location = new Point(264, 52);
+            txtbox_sup_profile.Location = new Point(257, 52);
             txtbox_sup_profile.Margin = new Padding(3, 2, 3, 2);
             txtbox_sup_profile.Name = "txtbox_sup_profile";
             txtbox_sup_profile.Size = new Size(168, 22);
@@ -143,7 +160,7 @@
             lbl_sup_profile.AutoSize = true;
             lbl_sup_profile.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             lbl_sup_profile.ForeColor = Color.FromArgb(230, 231, 241);
-            lbl_sup_profile.Location = new Point(264, 21);
+            lbl_sup_profile.Location = new Point(257, 21);
             lbl_sup_profile.Margin = new Padding(1, 0, 1, 0);
             lbl_sup_profile.Name = "lbl_sup_profile";
             lbl_sup_profile.Size = new Size(143, 21);
@@ -190,11 +207,11 @@
             txtbox_email_message.BackColor = Color.FromArgb(230, 231, 241);
             txtbox_email_message.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtbox_email_message.ForeColor = Color.FromArgb(51, 54, 62);
-            txtbox_email_message.Location = new Point(12, 207);
+            txtbox_email_message.Location = new Point(12, 204);
             txtbox_email_message.Multiline = true;
             txtbox_email_message.Name = "txtbox_email_message";
             txtbox_email_message.ScrollBars = ScrollBars.Vertical;
-            txtbox_email_message.Size = new Size(1059, 133);
+            txtbox_email_message.Size = new Size(1059, 136);
             txtbox_email_message.TabIndex = 4;
             // 
             // strip_email_info
@@ -256,10 +273,10 @@
             txtbox_email_subject.BackColor = Color.FromArgb(230, 231, 241);
             txtbox_email_subject.Font = new Font("Segoe UI", 12F);
             txtbox_email_subject.ForeColor = Color.FromArgb(51, 54, 62);
-            txtbox_email_subject.Location = new Point(123, 147);
+            txtbox_email_subject.Location = new Point(122, 147);
             txtbox_email_subject.Margin = new Padding(4);
             txtbox_email_subject.Name = "txtbox_email_subject";
-            txtbox_email_subject.Size = new Size(948, 29);
+            txtbox_email_subject.Size = new Size(949, 29);
             txtbox_email_subject.TabIndex = 3;
             // 
             // label2
@@ -281,10 +298,10 @@
             txtbox_email_cc.CharacterCasing = CharacterCasing.Upper;
             txtbox_email_cc.Font = new Font("Segoe UI", 12F);
             txtbox_email_cc.ForeColor = Color.FromArgb(51, 54, 62);
-            txtbox_email_cc.Location = new Point(123, 87);
+            txtbox_email_cc.Location = new Point(122, 87);
             txtbox_email_cc.Margin = new Padding(4);
             txtbox_email_cc.Name = "txtbox_email_cc";
-            txtbox_email_cc.Size = new Size(948, 29);
+            txtbox_email_cc.Size = new Size(949, 29);
             txtbox_email_cc.TabIndex = 2;
             // 
             // label1
@@ -306,28 +323,11 @@
             txtbox_email_to.CharacterCasing = CharacterCasing.Upper;
             txtbox_email_to.Font = new Font("Segoe UI", 12F);
             txtbox_email_to.ForeColor = Color.FromArgb(51, 54, 62);
-            txtbox_email_to.Location = new Point(123, 27);
+            txtbox_email_to.Location = new Point(122, 27);
             txtbox_email_to.Margin = new Padding(4);
             txtbox_email_to.Name = "txtbox_email_to";
-            txtbox_email_to.Size = new Size(948, 29);
+            txtbox_email_to.Size = new Size(949, 29);
             txtbox_email_to.TabIndex = 1;
-            // 
-            // bttn_test_email
-            // 
-            bttn_test_email.BackColor = Color.LightSalmon;
-            bttn_test_email.Cursor = Cursors.Hand;
-            bttn_test_email.Dock = DockStyle.Right;
-            bttn_test_email.FlatStyle = FlatStyle.Flat;
-            bttn_test_email.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            bttn_test_email.ForeColor = Color.FromArgb(51, 54, 62);
-            bttn_test_email.Location = new Point(872, 0);
-            bttn_test_email.Margin = new Padding(4);
-            bttn_test_email.Name = "bttn_test_email";
-            bttn_test_email.Size = new Size(105, 104);
-            bttn_test_email.TabIndex = 22;
-            bttn_test_email.Text = "TEST";
-            bttn_test_email.UseVisualStyleBackColor = false;
-            bttn_test_email.Click += bttn_test_email_Click;
             // 
             // form_email_info
             // 

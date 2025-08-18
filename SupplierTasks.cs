@@ -1,8 +1,10 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.ApplicationModel.VoiceCommands;
 using static ONBOARDING.DBConnection;
 using static ONBOARDING.Email;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ONBOARDING
 {
@@ -84,22 +86,19 @@ namespace ONBOARDING
 
 		private void dgv_tasks_CellClick(object sender, DataGridViewCellEventArgs e) // handles cell click events
 		{
-			string currentTime = DateTime.Now.ToString("HH:mm:ss");
+			if (e.RowIndex < 0 || e.ColumnIndex < 0) return; // prevent the program crash when users click on header
+
+            string currentTime = DateTime.Now.ToString("HH:mm:ss");
 			string taskID = dgv_tasks.Rows[e.RowIndex].Cells["taskID"].Value.ToString();
 			string supNo = taskTrack[0]["SUPPLIER_NO"].ToString();
 			string profile = supplierInfo[0]["PROFILE"].ToString();
-			string completeValue = dgv_tasks.Rows[e.RowIndex].Cells["COMPLETED"].Value.ToString();
-			string initiatedValue = dgv_tasks.Rows[e.RowIndex].Cells["INITIATED"].Value.ToString();
-			var autoCompleteValue = (bool)dgv_tasks.Rows[e.RowIndex].Cells["AUTO_COMPLETED"].Value;
-			var backendCheckValue = (bool)dgv_tasks.Rows[e.RowIndex].Cells["BACKEND_CHECK"].Value;
+            string completeValue = dgv_tasks.Rows[e.RowIndex].Cells["COMPLETED"].Value.ToString();
+            string initiatedValue = dgv_tasks.Rows[e.RowIndex].Cells["INITIATED"].Value.ToString();
+            var autoCompleteValue = (bool)dgv_tasks.Rows[e.RowIndex].Cells["AUTO_COMPLETED"].Value;
+            var backendCheckValue = (bool)dgv_tasks.Rows[e.RowIndex].Cells["BACKEND_CHECK"].Value;
 
-			/*if (!string.IsNullOrEmpty(completeValue))
-			{
-                DialogResult result = MessageBox.Show($"RE-TRY COMPLETE TASK <{taskID}>  (´･ω･`)?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (result == DialogResult.No) return;
-			}*/
 
-			if (e.ColumnIndex == dgv_tasks.Columns["TASK_BUTTON"].Index && e.RowIndex >= 0) // handles complete button column
+			if (e.ColumnIndex == dgv_tasks.Columns["TASK_BUTTON"].Index) // && e.RowIndex >= 0) // handles complete button column
 			{
 				DialogResult result = MessageBox.Show($"COMPLETE TASK <{taskID}>  (´･ω･`)?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 				if (result == DialogResult.No) return;
@@ -110,28 +109,48 @@ namespace ONBOARDING
 					strip_message.Text = $"TASK CANNOT BE COMPLETED BEFORE IT'S INITIATED  ヾ( ･`⌓´･)ﾉﾞ";
 					return;
 				}
-				if (backendCheckValue)
+
+				if (backendCheckValue) // try to complete backend task when user press the complete button
 				{
-					string statusMessage = $"TASK <{taskID}> HAS NOT BEEN COMPLETED - CONDITION(S) NOT SATISFIED  ヾ( ･`⌓´･)ﾉﾞ";
-					if (BackendCheck.CompleteBackend(supNo, profile, taskID)) statusMessage = $"TASK <{taskID}> HAS BEEN COMPLETED  ( • ̀ω•́ )✧";
-					RefreshDataGridView(supNo, statusMessage);
-					//return; //SET CONDITION TO NOT RETURN IF IT IS LAST TASK
-				} 
+					//string statusMessage = $"TASK <{taskID}> HAS NOT BEEN COMPLETED - CONDITION(S) NOT SATISFIED  ヾ( ･`⌓´･)ﾉﾞ";
+					if (BackendCheck.CompleteBackend(supNo, profile, taskID))
+					{
+						string statusMessage = $"TASK <{taskID}> HAS BEEN COMPLETED  ( • ̀ω•́ )✧";
+                        RefreshDataGridView(supNo, statusMessage);
+                        CheckOnboardComplete(supNo, profile);
+                    }
+					else
+					{
+                        strip_time.Text = currentTime;
+                        strip_message.Text = $"TASK <{taskID}> HAS NOT BEEN COMPLETED - CONDITION(S) NOT SATISFIED  ヾ( ･`⌓´･)ﾉﾞ";
+                    }
+					//RefreshDataGridView(supNo, statusMessage);
+                    return;
+                } 
 				Query.CompleteTasks(supNo, taskID);
 				Parallel.Invoke(() => InitiateNextTask(taskID, supNo, profile), () => SendTaskCompleteEmails(taskID, supNo, profile));
-				RefreshDataGridView(supNo, $"TASK <{taskID}> HAS BEEN COMPLETED  ( • ̀ω•́ )✧");
-			}
 
-			if (e.ColumnIndex == dgv_tasks.Columns["BYPASSED"].Index && e.RowIndex >= 0) // handles BYPASSED checkbox column 
+                RefreshDataGridView(supNo, $"TASK <{taskID}> HAS BEEN COMPLETED  ( • ̀ω•́ )✧");
+
+                CheckOnboardComplete(supNo, profile);
+            }
+
+			if (e.ColumnIndex == dgv_tasks.Columns["BYPASSED"].Index) // && e.RowIndex >= 0) // handles BYPASSED checkbox column 
 			{
 				if (autoCompleteValue || taskID == "6Z") return;
 				DialogResult result = MessageBox.Show($"BYPASS TASK <{taskID}>  (´･ω･`)?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 				if (result == DialogResult.No) return;
 				SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK SET BYPASSED = TRUE, COMPLETED = CURRENT_DATE WHERE SUPPLIER_NO = '{supNo}' AND TASKID = '{taskID}'");
+
 				Parallel.Invoke(() => InitiateNextTask(taskID, supNo, profile), () => SendTaskCompleteEmails(taskID, supNo, profile));
 				RefreshDataGridView(supNo, $"TASK <{taskID}> HAS BEEN COMPLETED USING BYPASS  ( ﾉ･o･ )ﾉ");
-			}
+
+
+                CheckOnboardComplete(supNo, profile);
+
+            }
 			
+			/*
 			if ((e.ColumnIndex == dgv_tasks.Columns["TASK_BUTTON"].Index || e.ColumnIndex == dgv_tasks.Columns["BYPASSED"].Index) && e.RowIndex >= 0) // handles 6Z
 			{
 				int taskNullCount = 0;
@@ -147,7 +166,24 @@ namespace ONBOARDING
 					strip_status.Text = "COMPLETE";
 				}
 			}
+			*/
 		}
+
+		private void CheckOnboardComplete(string supNo, string profile)
+		{
+            int taskNullCount = 0;
+            foreach (DataRowView row in taskTrack) { if (string.IsNullOrEmpty(row["COMPLETED"].ToString())) { taskNullCount += 1; } }
+			if (taskNullCount <= 1) // 6Z is the only reminaing task not completed
+            { 
+                Parallel.Invoke(() => Query.InitiateTasks(supNo, "6Z"),
+                    () => SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_TASK_TRACK SET INITIATED = CURRENT_DATE, COMPLETED = CURRENT_DATE WHERE SUPPLIER_NO = '{supNo}' AND TASKID = '6Z'"),
+                    () => SendTaskCompleteEmails("6Z", supNo, profile),
+                    () => SnowflakeCommand($"UPDATE ISP.SPM.SUPPLIER_ONBOARDING_SUPPLIER SET STATUS = 'COMPLETE', COMPLETE_DATE = CURRENT_DATE WHERE SUPPLIER_NO = '{supNo}'"),
+                    () => SQLCommand($"UPDATE ITEMMANAGEMENT.DBO.SUPPLIER_ALIGNMENT SET STANDING = 'New' WHERE SUPPLIERNUMBER = {supNo}"));
+                RefreshDataGridView(supNo, "SUPPLIER ONBOARDING COMPLETED  ( ﾉ･o･ )ﾉ");
+                strip_status.Text = "COMPLETE";
+            }
+        }
 
 		private void dgv_tasks_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
